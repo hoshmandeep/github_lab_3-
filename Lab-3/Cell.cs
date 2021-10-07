@@ -20,21 +20,37 @@ namespace Psim.ModelComponents
 {
 	public enum SurfaceLocation
 	{
-		// TODO -> set up these enums
+		left = 0,
+		top =1,
+		right= 2,
+		bot = 3
 	}
 
 	public class Cell : Rectangle
 	{
+		private const int NOTFANCY = 1;
 		private const int NUM_SURFACES = 4;
-		private List<Phonon> phonons = new() { };
-		private List<Phonon> incomingPhonons = new() { };
+		private List<Phonon> phonons = new List<Phonon>() {};
+		private List<Phonon> incomingPhonons = new List<Phonon>() { };
 		private ISurface[] surfaces = new ISurface[NUM_SURFACES];
 		public List<Phonon> Phonons { get { return phonons; } }
 
 		public Cell(double length, double width)
 			: base(length, width)
 		{
-			// Initialize surfaces
+			// Initialize cell with 4 boumdary surfaces covering the 4 possible surface locations
+			// and put them in the correct position in the surface array
+#if true
+			for (int i = 0; i < NUM_SURFACES; ++i)
+            {
+				surfaces[i] = new BoundarySurface((SurfaceLocation)i, this);
+            }
+#else
+              foreach ( int surface  in Enum.GetValue(typeof(SurfaceLocation)))
+			  {
+			    surface [surface] = new Boundarysurface((SurfaceLocation)surface, this);
+				}
+#endif
 		}
 
 		/// <summary>
@@ -43,8 +59,7 @@ namespace Psim.ModelComponents
 		/// <param name="p">The phonon that will be added</param>
 		public void AddPhonon(Phonon p)
 		{
-			// TODO
-			throw new NotImplementedException();
+			phonons.Add(p);
 		}
 
 		/// <summary>
@@ -54,8 +69,8 @@ namespace Psim.ModelComponents
 		/// <param name="p">The phonon that will be added</param>
 		public void AddIncPhonon(Phonon p)
 		{
-			// TODO
-			throw new NotImplementedException();
+			// This could cause a very nasty bug lasty bug later on- be sure to verify now
+			incomingPhonons.Add(p);
 		}
 
 		/// <summary>
@@ -63,8 +78,8 @@ namespace Psim.ModelComponents
 		/// </summary>
 		public void MergeIncPhonons()
 		{
-			// TODO
-			throw new NotImplementedException();
+			phonons.AddRange(incomingPhonons);
+			incomingPhonons.Clear();
 		}
 
 		/// <summary>
@@ -74,8 +89,7 @@ namespace Psim.ModelComponents
 		/// <returns>The surface at location loc</returns>
 		public ISurface GetSurface(SurfaceLocation loc)
 		{
-			// TODO
-			throw new NotImplementedException();
+			return surfaces[(int)loc];
 		}
 
 		/// <summary>
@@ -87,13 +101,15 @@ namespace Psim.ModelComponents
 		/// <returns>The surface that the phonon collides with</returns>
 		public SurfaceLocation? MoveToNearestSurface(Phonon p)
 		{
-			// TODO - challenging!! be cautious of floating point issues!
+			//To test this, you will need to create a cell -> the surface will be set up automatically now
+			//You need to add a phonon ->
+			//TODO - challemging !! be cautious of floating point issues!
 			throw new NotImplementedException();
 		}
 
 		public override string ToString()
 		{
-			return string.Format("{1,-7} {2,-7}", phonons.Count, incomingPhonons.Count);
+			return string.Format("{0,-7} {1,-7}", phonons.Count, incomingPhonons.Count);
 		}
 	}
 }

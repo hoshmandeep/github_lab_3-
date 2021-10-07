@@ -20,8 +20,15 @@ namespace Psim.ModelComponents
 		}
 		public virtual Cell HandlePhonon(Phonon p)
 		{
-			// Only need to account for perfectly specular reflection
-			// TODO: Alter the phonon direction vector as though it just collided with a mirror
+			Vector direction = p.Direction;
+			if(Location == SurfaceLocation.left || Location == SurfaceLocation.right)
+            {
+				p.SetDirection(-direction.DX, direction.DY);
+            }
+            else
+            {
+				p.SetDirection(direction.DX, -direction.DY);
+            }
 			return cell;
 		}
 	}
